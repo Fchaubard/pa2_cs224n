@@ -35,10 +35,24 @@ public class TreeAnnotations {
 		if (tree.isLeaf())
 			return new Tree<String>(label);
 		if (tree.getChildren().size() == 1) {
+			//System.out.printf("Train %s->%s\n",tree.getLabel(),tree.getChildren().get(0).getLabel());
+
 			return new Tree<String>
 			(label, 
 					Collections.singletonList(binarizeTree(tree.getChildren().get(0))));
 		}
+		if (tree.getChildren().size() == 2) {
+			Tree<String> leftTree = tree.getChildren().get(0);
+			Tree<String> rightTree = tree.getChildren().get(1);
+			List<Tree<String>> children = new ArrayList<Tree<String>>();
+			children.add(binarizeTree(leftTree));
+			children.add(binarizeTree(rightTree));
+			
+			//System.out.printf("Train %s->%s:%s\n",tree.getLabel(),leftTree.getLabel(),rightTree.getLabel());
+			
+			return new Tree<String>(label, children);
+		}
+		
 		// otherwise, it's a binary-or-more local tree, 
 		// so decompose it into a sequence of binary and unary trees.
 		String intermediateLabel = "@"+label+"->";
@@ -59,6 +73,9 @@ public class TreeAnnotations {
 							intermediateLabel + "_" + leftTree.getLabel());
 			children.add(rightTree);
 		}
+		
+		//System.out.printf("Train %s->%s:%s\n",tree.getLabel(),leftTree.getLabel(),intermediateLabel);
+		
 		return new Tree<String>(intermediateLabel, children);
 	} 
 
