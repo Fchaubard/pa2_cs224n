@@ -229,9 +229,8 @@ public class Grammar {
 		//String classLabel = tree.getLabel()+"^"+ tree.getPreOrderTraversal();
 		
 		System.out.printf("Begin\n");
-		for (Tree<String> subtree :  tree.getChildren()){
-			System.out.printf(" sublabel: %s %s %s\n", subtree.getLabel(), parent, makeVerticalRuleLabel(tree,parent) );
-		}
+		System.out.printf(" sublabel: %s %s %s\n", tree.getLabel(), parent, makeVerticalRuleLabel(tree,parent) );
+		
 		
 		if (tree.getChildren().size() == 1) {
 			UnaryRule unaryRule = makeUnaryRule(tree,parent);
@@ -260,7 +259,11 @@ public class Grammar {
 				tree.getChildren().get(1).getLabel());
 	}
 	private String makeVerticalRuleLabel(Tree<String> tree, String parent){
-		return tree.getLabel()+"^"+parent;
+		if (tree.getLabel().equals("ROOT")){
+			return tree.getLabel();
+		}else{
+			return tree.getLabel()+"^"+parent;			
+		}
 		
 	}
 }
