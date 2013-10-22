@@ -39,13 +39,6 @@ public class PCFGParser implements Parser {
 
 	public Tree<String> getBestParse(List<String> sentence) {
 		
-		System.out.println("Parsing: ");
-		//Get nonterminal counts
-		for (int i=0; i < sentence.size(); i++){
-			System.out.printf("%s ",sentence.get(i));
-		}
-		System.out.println("\nStarting DP");
-		
 		CounterMap<Pair<Integer,Integer>,String> score = new CounterMap<Pair<Integer,Integer>,String>();
 		HashMap<Pair<Pair<Integer,Integer>,String>,Pair<Integer,Pair<String,String>>> back = new HashMap<Pair<Pair<Integer,Integer>,String>,Pair<Integer,Pair<String,String>>>();
 		
@@ -56,8 +49,6 @@ public class PCFGParser implements Parser {
 		//Get all tags
 		allTags = lexicon.getAllTags();
 		
-		System.out.println("Initial sweep");
-
 		//Get nonterminal counts
 		for (int i=0; i < sentence.size(); i++){
 			for (String tag : allTags){
@@ -94,12 +85,9 @@ public class PCFGParser implements Parser {
 
 
 		for (int span = 1; span < sentence.size(); span++) {
-			System.out.printf("Span: %d\n",span);
 			for (int begin=0; begin < sentence.size()-span; begin++){
 				int end=begin+span;	
 				for (int split = begin; split < end; split++) {
-					//B_terms = score.getCounter(getIntPair(begin, split)).keySet();
-					//C_terms = score.getCounter(getIntPair(split+1, end)).keySet();
 					B_terms = score.getCounter(getIntPair(begin, split)).keySet();
 					C_terms = score.getCounter(getIntPair(split+1, end)).keySet();
 					for (String B : B_terms){
@@ -145,9 +133,6 @@ public class PCFGParser implements Parser {
 				}
 			}
 		}
-
-		System.out.println("\nBuilding Tree");
-
 		return buildTree(sentence,score,back);
 	}
 
@@ -159,7 +144,7 @@ public class PCFGParser implements Parser {
 	private Tree<String> buildTreeRec(List<String> sentence,int begin, int end, String label, CounterMap<Pair<Integer,Integer>,String> score, Map<Pair<Pair<Integer,Integer>,String>,Pair<Integer,Pair<String,String>>> back) {
 		Tree<String> tree = new Tree<String>(label);
 		//If at a leaf
-		if (begin==end && allTags.contains(label)){// && !back.containsKey(getIntIntStrTriple(begin,end,label))){
+		if (begin==end && allTags.contains(label)){
 			Tree<String> leaf = new Tree<String>(sentence.get(begin));
 			tree.setChildren(Collections.singletonList(leaf));
 			return tree;
