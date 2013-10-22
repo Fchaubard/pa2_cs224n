@@ -21,10 +21,8 @@ public class CounterMap<K, V> {
   // -----------------------------------------------------------------------
 
   public CounterMap() {
-//    this(new MapFactory.HashMapFactory<K, Counter<V>>(), 
-  //       new MapFactory.HashMapFactory<V, Double>());
-    this(new MapFactory.IdentityHashMapFactory<K, Counter<V>>(), 
-            new MapFactory.IdentityHashMapFactory<V, Double>());
+    this(new MapFactory.HashMapFactory<K, Counter<V>>(), 
+         new MapFactory.HashMapFactory<V, Double>());
   }
 
   public CounterMap(MapFactory<K, Counter<V>> outerMF, 

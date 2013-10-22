@@ -166,8 +166,7 @@ public class Counter <E> implements Serializable {
   }
 
   public Counter() {
-	 this(new MapFactory.IdentityHashMapFactory<E, Double>());
-	 //    this(new MapFactory.HashMapFactory<E, Double>());
+    this(new MapFactory.HashMapFactory<E, Double>());
   }
 
   public Counter(MapFactory<E, Double> mf) {

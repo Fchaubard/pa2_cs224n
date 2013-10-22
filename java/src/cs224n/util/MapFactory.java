@@ -3,6 +3,8 @@ package cs224n.util;
 import java.util.*;
 import java.io.Serializable;
 
+import cs224n.assignment.PCFGParser;
+
 /**
  * The MapFactory is a mechanism for specifying what kind of map is to be used
  * by some object.  For example, if you want a Counter which is backed by an
@@ -16,7 +18,7 @@ public abstract class MapFactory<K,V> implements Serializable {
 
   public static class HashMapFactory<K,V> extends MapFactory<K,V> {
     public Map<K,V> buildMap() {
-      return new HashMap<K,V>();
+      return new HashMap<K,V>(PCFGParser.HASH_MAP_INIT_SIZE);
     }
   }
 

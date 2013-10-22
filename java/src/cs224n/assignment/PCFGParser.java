@@ -15,8 +15,8 @@ public class PCFGParser implements Parser {
 	private Grammar grammar;
 	private Lexicon lexicon;
 	private Set<String> allTags;
-
-	CounterMap<List<String>,Tree<String>> knownParses;
+	
+	public static int HASH_MAP_INIT_SIZE=2000;
 
 	public void train(List<Tree<String>> trainTrees) {
 		// TODO: before you generate your grammar, the training trees
@@ -49,8 +49,12 @@ public class PCFGParser implements Parser {
 		System.out.println("\nStarting DP");
 		
 		CounterMap<Pair<Integer,Integer>,String> score = new CounterMap<Pair<Integer,Integer>,String>();
-		IdentityHashMap<Pair<Pair<Integer,Integer>,String>,Pair<Integer,Pair<String,String>>> back = new IdentityHashMap<Pair<Pair<Integer,Integer>,String>,Pair<Integer,Pair<String,String>>>();
-
+		HashMap<Pair<Pair<Integer,Integer>,String>,Pair<Integer,Pair<String,String>>> back = new HashMap<Pair<Pair<Integer,Integer>,String>,Pair<Integer,Pair<String,String>>>(HASH_MAP_INIT_SIZE);
+		
+		//Declare variables;
+		Set<String> B_terms,new_B_terms,C_terms;
+		double p;
+		
 		//Get all tags
 		allTags = lexicon.getAllTags();
 		
@@ -64,13 +68,15 @@ public class PCFGParser implements Parser {
 			}
 		}
 
-		double p;
 		for (int i=0; i < sentence.size(); i++){
 			//Handle unaries
+			B_terms = new HashSet<String>(score.getCounter(getIntPair(i, i)).keySet());
+			new_B_terms = new HashSet<String>();
 			boolean added = true;
 			while (added){
+				B_terms.addAll(new_B_terms);
+				new_B_terms = new HashSet<String>();
 				added=false;
-				ArrayList<String> B_terms = new ArrayList<String>(score.getCounter(getIntPair(i, i)).keySet());
 				for (String B : B_terms){
 					List<UnaryRule> A_unaryParents = grammar.getUnaryRulesByChild(B);
 					for (UnaryRule A : A_unaryParents){
@@ -80,6 +86,7 @@ public class PCFGParser implements Parser {
 								score.setCount(getIntPair(i,i),A.parent, p);
 								back.put(getIntIntStrTriple(i, i, A.parent), getIntStrStrTriple(-1,B,null));	
 								added=true;
+								new_B_terms.add(A.getParent());
 							}
 						}
 					}
@@ -93,8 +100,10 @@ public class PCFGParser implements Parser {
 			for (int begin=0; begin < sentence.size()-span; begin++){
 				int end=begin+span;	
 				for (int split = begin; split < end; split++) {
-					ArrayList<String> B_terms = new ArrayList<String>(score.getCounter(getIntPair(begin, split)).keySet());
-					ArrayList<String> C_terms = new ArrayList<String>(score.getCounter(getIntPair(split+1, end)).keySet());
+					//B_terms = score.getCounter(getIntPair(begin, split)).keySet();
+					//C_terms = score.getCounter(getIntPair(split+1, end)).keySet();
+					B_terms = score.getCounter(getIntPair(begin, split)).keySet();
+					C_terms = score.getCounter(getIntPair(split+1, end)).keySet();
 					for (String B : B_terms){
 						for (BinaryRule rule : grammar.getBinaryRulesByLeftChild(B)){
 							if (C_terms.contains(rule.getRightChild())){
@@ -112,9 +121,12 @@ public class PCFGParser implements Parser {
 					}
 					//Handle unaries
 					boolean added = true;
+					B_terms = new HashSet<String>(score.getCounter(getIntPair(begin, end)).keySet());
+					new_B_terms = new HashSet<String>();
 					while (added){
 						added=false;
-						B_terms = new ArrayList<String>(score.getCounter(getIntPair(begin, end)).keySet());
+						B_terms.addAll(new_B_terms);
+						new_B_terms = new HashSet<String>();
 						for (String B : B_terms){
 							List<UnaryRule> A_unaryParents = grammar.getUnaryRulesByChild(B);
 							for (UnaryRule A : A_unaryParents){
@@ -124,6 +136,8 @@ public class PCFGParser implements Parser {
 										score.setCount(getIntPair(begin,end),A.parent, p);
 										back.put(getIntIntStrTriple(begin, end, A.parent), getIntStrStrTriple(-1,B,null));	
 										added=true;
+										//Add the new unary parent to the list of terms we are checking
+										new_B_terms.add(A.getParent());
 									}
 								}
 
