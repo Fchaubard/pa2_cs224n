@@ -198,8 +198,11 @@ public class Grammar {
 		Counter<UnaryRule> unaryRuleCounter = new Counter<UnaryRule>();
 		Counter<BinaryRule> binaryRuleCounter = new Counter<BinaryRule>();
 		Counter<String> symbolCounter = new Counter<String>();
+		
+	
 		for (Tree<String> trainTree : trainTrees) {
-			tallyTree(trainTree, symbolCounter, unaryRuleCounter, binaryRuleCounter);
+
+			tallyTree(trainTree, symbolCounter, unaryRuleCounter, binaryRuleCounter,"");
 		}
 		for (UnaryRule unaryRule : unaryRuleCounter.keySet()) {
 			double unaryProbability = 
@@ -219,33 +222,48 @@ public class Grammar {
 
 	private void tallyTree(Tree<String> tree, Counter<String> symbolCounter,
 			Counter<UnaryRule> unaryRuleCounter, 
-			Counter<BinaryRule> binaryRuleCounter) {
+			Counter<BinaryRule> binaryRuleCounter, String parent) {
 		if (tree.isLeaf()) return;
 		if (tree.isPreTerminal()) return;
+		// is not leaf or preterminal
+		//String classLabel = tree.getLabel()+"^"+ tree.getPreOrderTraversal();
+		
+		System.out.printf("Begin\n");
+		System.out.printf(" sublabel: %s %s %s\n", tree.getLabel(), parent, makeVerticalRuleLabel(tree,parent) );
+		
+		
 		if (tree.getChildren().size() == 1) {
-			UnaryRule unaryRule = makeUnaryRule(tree);
-			symbolCounter.incrementCount(tree.getLabel(), 1.0);
+			UnaryRule unaryRule = makeUnaryRule(tree,parent);
+			symbolCounter.incrementCount(makeVerticalRuleLabel(tree,parent), 1.0);
 			unaryRuleCounter.incrementCount(unaryRule, 1.0);
 		}
 		if (tree.getChildren().size() == 2) {
-			BinaryRule binaryRule = makeBinaryRule(tree);
-			symbolCounter.incrementCount(tree.getLabel(), 1.0);
+			BinaryRule binaryRule = makeBinaryRule(tree,parent);
+			symbolCounter.incrementCount(makeVerticalRuleLabel(tree,parent), 1.0);
 			binaryRuleCounter.incrementCount(binaryRule, 1.0);
 		}
 		if (tree.getChildren().size() < 1 || tree.getChildren().size() > 2) {
 			throw new RuntimeException("Attempted to construct a Grammar with an illegal tree: "+tree);
 		}
 		for (Tree<String> child : tree.getChildren()) {
-			tallyTree(child, symbolCounter, unaryRuleCounter,  binaryRuleCounter);
+			tallyTree(child, symbolCounter, unaryRuleCounter,  binaryRuleCounter, tree.getLabel());
 		}
 	}
 
-	private UnaryRule makeUnaryRule(Tree<String> tree) {
-		return new UnaryRule(tree.getLabel(), tree.getChildren().get(0).getLabel());
+	private UnaryRule makeUnaryRule(Tree<String> tree, String parent) {
+		return new UnaryRule(makeVerticalRuleLabel(tree,parent), tree.getChildren().get(0).getLabel());
 	}
 
-	private BinaryRule makeBinaryRule(Tree<String> tree) {
-		return new BinaryRule(tree.getLabel(), tree.getChildren().get(0).getLabel(), 
+	private BinaryRule makeBinaryRule(Tree<String> tree, String parent) {
+		return new BinaryRule(makeVerticalRuleLabel(tree,parent), tree.getChildren().get(0).getLabel(), 
 				tree.getChildren().get(1).getLabel());
+	}
+	private String makeVerticalRuleLabel(Tree<String> tree, String parent){
+		if (tree.getLabel().equals("ROOT")){
+			return tree.getLabel();
+		}else{
+			return tree.getLabel()+"^"+parent;			
+		}
+		
 	}
 }
