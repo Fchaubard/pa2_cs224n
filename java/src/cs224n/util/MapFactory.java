@@ -18,7 +18,7 @@ public abstract class MapFactory<K,V> implements Serializable {
 
   public static class HashMapFactory<K,V> extends MapFactory<K,V> {
     public Map<K,V> buildMap() {
-      return new HashMap<K,V>(PCFGParser.HASH_MAP_INIT_SIZE);
+      return new HashMap<K,V>();
     }
   }
 

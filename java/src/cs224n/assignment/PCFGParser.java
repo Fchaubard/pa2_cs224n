@@ -16,8 +16,6 @@ public class PCFGParser implements Parser {
 	private Lexicon lexicon;
 	private Set<String> allTags;
 	
-	public static int HASH_MAP_INIT_SIZE=2000;
-
 	public void train(List<Tree<String>> trainTrees) {
 		// TODO: before you generate your grammar, the training trees
 		// need to be binarized so that rules are at most binary
@@ -49,7 +47,7 @@ public class PCFGParser implements Parser {
 		System.out.println("\nStarting DP");
 		
 		CounterMap<Pair<Integer,Integer>,String> score = new CounterMap<Pair<Integer,Integer>,String>();
-		HashMap<Pair<Pair<Integer,Integer>,String>,Pair<Integer,Pair<String,String>>> back = new HashMap<Pair<Pair<Integer,Integer>,String>,Pair<Integer,Pair<String,String>>>(HASH_MAP_INIT_SIZE);
+		HashMap<Pair<Pair<Integer,Integer>,String>,Pair<Integer,Pair<String,String>>> back = new HashMap<Pair<Pair<Integer,Integer>,String>,Pair<Integer,Pair<String,String>>>();
 		
 		//Declare variables;
 		Set<String> B_terms,new_B_terms,C_terms;
