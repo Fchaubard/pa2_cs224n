@@ -53,7 +53,6 @@ public class PCFGParser implements Parser {
 		for (int i=0; i < sentence.size(); i++){
 			for (String tag : allTags){
 				score.setCount(getIntPair(i,i),tag,lexicon.scoreTagging(sentence.get(i), tag));
-				//back.put(getIntIntStrTriple(i, i, tag), getIntStrStrTriple(-1,sentence.get(i),null));	
 			}
 		}
 
@@ -64,7 +63,7 @@ public class PCFGParser implements Parser {
 			boolean added = true;
 			while (added){
 				B_terms.addAll(new_B_terms);
-				new_B_terms = new HashSet<String>();
+				new_B_terms.clear();
 				added=false;
 				for (String B : B_terms){
 					List<UnaryRule> A_unaryParents = grammar.getUnaryRulesByChild(B);
@@ -112,7 +111,7 @@ public class PCFGParser implements Parser {
 					while (added){
 						added=false;
 						B_terms.addAll(new_B_terms);
-						new_B_terms = new HashSet<String>();
+						new_B_terms.clear();
 						for (String B : B_terms){
 							List<UnaryRule> A_unaryParents = grammar.getUnaryRulesByChild(B);
 							for (UnaryRule A : A_unaryParents){
@@ -138,7 +137,8 @@ public class PCFGParser implements Parser {
 
 	private Tree<String> buildTree(List<String> sentence, CounterMap<Pair<Integer,Integer>,String> score, Map<Pair<Pair<Integer,Integer>,String>,Pair<Integer,Pair<String,String>>> back) {
 		Tree<String> root = buildTreeRec(sentence,0,sentence.size()-1,"ROOT",score,back);		
-		return TreeAnnotations.unAnnotateTree(root);
+		//return TreeAnnotations.unAnnotateTree(root);
+		return root;
 	}
 
 	private Tree<String> buildTreeRec(List<String> sentence,int begin, int end, String label, CounterMap<Pair<Integer,Integer>,String> score, Map<Pair<Pair<Integer,Integer>,String>,Pair<Integer,Pair<String,String>>> back) {
