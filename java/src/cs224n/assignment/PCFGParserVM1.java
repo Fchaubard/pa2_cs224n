@@ -11,7 +11,7 @@ import java.util.*;
 /**
  * The CKY PCFG Parser you will implement.
  */
-public class PCFGParser implements Parser {
+public class PCFGParserVM1 implements Parser {
 	private Grammar grammar;
 	private Lexicon lexicon;
 	private Set<String> allTags;
@@ -26,7 +26,9 @@ public class PCFGParser implements Parser {
 			binarizedTrainTrees.add(TreeAnnotations.annotateTree(trainTree));
 		}
 
-		grammar = new Grammar(binarizedTrainTrees);
+		//grammar = new Grammar(binarizedTrainTrees);
+		grammar = new VM1_Grammar(binarizedTrainTrees);
+
 	}
 
 	public Tree<String> getBestParse(List<String> sentence) {
