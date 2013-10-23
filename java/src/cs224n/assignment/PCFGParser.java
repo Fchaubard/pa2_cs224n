@@ -28,7 +28,8 @@ public class PCFGParser implements Parser {
 			binarizedTrainTrees.add(TreeAnnotations.annotateTree(trainTree));
 		}
 
-		grammar = new Grammar(binarizedTrainTrees);
+		//grammar = new Grammar(binarizedTrainTrees);
+		grammar = new VM1_Grammar(binarizedTrainTrees);
 
 		/*for (Tree<String> trainTree : trainTrees) {
             List<String> tags = trainTree.getPreTerminalYield();
@@ -73,6 +74,7 @@ public class PCFGParser implements Parser {
 							if (p > score.getCount(getIntPair(i,i), A.parent)){
 								score.setCount(getIntPair(i,i),A.parent, p);
 								back.put(getIntIntStrTriple(i, i, A.parent), getIntStrStrTriple(-1,B,null));	
+								//System.out.printf("%d:%d:%s->%s\n", i,i,A.getParent(),B);
 								added=true;
 								new_B_terms.add(A.getParent());
 							}
@@ -91,6 +93,7 @@ public class PCFGParser implements Parser {
 					C_terms = score.getCounter(getIntPair(split+1, end)).keySet();
 					for (String B : B_terms){
 						for (BinaryRule rule : grammar.getBinaryRulesByLeftChild(B)){
+							//System.out.printf("%d:%d:%s->%s:%s\n", begin,end,rule.getParent(),B,rule.getRightChild());
 							if (C_terms.contains(rule.getRightChild())){
 								String C = rule.getRightChild();
 								String A = rule.getParent();
@@ -137,8 +140,7 @@ public class PCFGParser implements Parser {
 
 	private Tree<String> buildTree(List<String> sentence, CounterMap<Pair<Integer,Integer>,String> score, Map<Pair<Pair<Integer,Integer>,String>,Pair<Integer,Pair<String,String>>> back) {
 		Tree<String> root = buildTreeRec(sentence,0,sentence.size()-1,"ROOT",score,back);		
-		//return TreeAnnotations.unAnnotateTree(root);
-		return root;
+		return TreeAnnotations.unAnnotateTree(root);
 	}
 
 	private Tree<String> buildTreeRec(List<String> sentence,int begin, int end, String label, CounterMap<Pair<Integer,Integer>,String> score, Map<Pair<Pair<Integer,Integer>,String>,Pair<Integer,Pair<String,String>>> back) {
@@ -150,6 +152,7 @@ public class PCFGParser implements Parser {
 			return tree;
 		}
 		Pair<Integer, Pair<String, String>> rule = back.get(getIntIntStrTriple(begin,end,label));
+		//System.out.printf("%d:%d:%s\n", begin,end,label);
 		int split=rule.getFirst();
 		if (split >= 0){
 			List<Tree<String>> children = new ArrayList<Tree<String>>();

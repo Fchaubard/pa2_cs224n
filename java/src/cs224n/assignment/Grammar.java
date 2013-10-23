@@ -191,6 +191,10 @@ public class Grammar {
 				unaryRule.getChild(), unaryRule);
 	}
 
+	public Grammar(){
+		
+	}
+	
 	/* A builds PCFG using the observed counts of binary and unary
 	 * productions in the training trees to estimate the probabilities
 	 * for those rules.  */ 

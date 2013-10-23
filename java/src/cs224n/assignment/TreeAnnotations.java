@@ -97,6 +97,6 @@ public class TreeAnnotations {
 				(new Trees.FunctionNodeStripper()).transformTree(debinarizedTree);
     Tree<String> unMarkovizedTree =
         (new Trees.MarkovizationAnnotationStripper()).transformTree(unAnnotatedTree);
-		return unAnnotatedTree;
+		return unMarkovizedTree;
 	}
 }
