@@ -1,12 +1,7 @@
 package cs224n.assignment;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import cs224n.assignment.Grammar.BinaryRule;
-import cs224n.assignment.Grammar.UnaryRule;
 import cs224n.ling.Tree;
 import cs224n.util.CollectionUtils;
 import cs224n.util.Counter;
